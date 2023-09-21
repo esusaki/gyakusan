@@ -31,7 +31,8 @@
             border-radius: 5px;
             background-color: white;
             box-shadow: 0 2px 5px #ccc;
-            height: 300px;
+            height: auto;
+            margin-bottom: 30px;
             
     
         }
@@ -63,8 +64,8 @@ var copybutton=document.getElementById("copybutton");
 var container=document.getElementById("container");
 
 function fitcontent(){
-    var contentHeight=container.scrollHeight+20;
-    container.style.height=contentHeight+"px";
+    // var contentHeight=container.scrollHeight+20;
+    // container.style.height=contentHeight+"px";
 }
 fitcontent();
 
