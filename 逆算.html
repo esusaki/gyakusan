@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逆算</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body{
+            /* font-size:120%; */
+            background-color: hsl(0, 0%, 96%);
+            padding: 20px;
+            justify-content: center;
+            display: flex;
+
+        }
+        /* input{
+            font-size:18px;
+        } */
+        button{
+            border: 0px;
+            padding: 4px;
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+        #container{
+            background-color: aqua;
+            max-width: 800px;
+            max-height: 400px;
+            padding: 30px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 5px #ccc;
+    
+        }
+
+
+    </style>
+
+</head>
+<body id="body">
+<div id="container">
+<button onclick="append_task()" style="border:0;padding:4px">タスク追加</button>
+<button onclick="prepend_task()" style="border:0;padding:4px"><i class="plus icon"></i>タスク追加(上に)</button>
+<ol id="task_list" style="padding-left:1px;"></ol>
+終了時刻   <input type="time" size="2" id="endtime">
+ゆとり   <input type="number" style="width:40px;padding:3px" id="yutori" min="0"> 分
+<p style="align-items:center;display: flex;margin-top:10px"><input type="checkbox" class="ui checkbox" id="yutori_last" style="margin-right: 5px">最後のタスクの後にもゆとりを入れる</p>
+<button onclick="calculate()" class="ui compact button">計算</button>
+<p id="output" style="margin-bottom:5px;margin-top:5px"></p>
+<button onclick="copy()" id="copybutton" class="ui compact gray button">コピー</button>
+</div>
+<script>
+var task_list=document.getElementById("task_list");
+var endtime=document.getElementById("endtime");
+var yutori=document.getElementById("yutori");
+var output=document.getElementById("output");
+var yutori_last=document.getElementById("yutori_last");
+var body=document.getElementById("body");
+var copybutton=document.getElementById("copybutton");
+
+function copy(){
+    if (output.innerText!=""){
+        navigator.clipboard.writeText(output.innerText);
+        copybutton.innerText = 'コピー完了！';
+        setTimeout(() => copybutton.innerText = 'コピー', 1000);
+    }
+}
+
+var taskid=0;
+
+function append_task(){
+    var child=document.createElement("li");
+    child.innerHTML='<input type="text" size=25 style="margin-right:5px;padding:3px;font-size:18px" placeholder="Task">\
+     所要時間 <input type="number" style="padding:3px;width:40px;" min="0" max="180"> 分\
+       <button onclick="up(this)" style="border:0;">↑</button>\
+       <button onclick="down(this)" style="border:0;">↓</button>\
+       <button onclick="del(this)" style="border:0;">削除</button>\n';
+       child.style="margin-bottom:5px";
+    task_list.appendChild(child);
+}
+
+function prepend_task(){
+    var child=document.createElement("li");
+    child.innerHTML='<input type="text" size="25" style="margin-right:5px;padding:3px;font-size:18px" placeholder="Task">\
+     所要時間 <input type="number" style="padding:3px;width:40px" min="0" max="180"> 分\
+       <button onclick="up(this)" style="border:0;">↑</button>\
+       <button onclick="down(this)" style="border:0;">↓</button>\
+       <button onclick="del(this)" style="border:0;">削除</button>\n';
+       child.style="margin-bottom:5px";  
+       if (true){
+        task_list.prepend(child);
+    }
+} 
+
+function del(n){
+    n.parentNode.remove();
+}
+
+//下矢印を押されたら、次のタスクとvalueを入れ替え（絶対もっと短く書ける、、）
+function down(n){
+    if (n.parentNode.nextElementSibling!=undefined){   
+    var v1=n.parentNode.children[0].value;
+    var v2=n.parentNode.nextElementSibling.children[0].value;
+    n.parentNode.children[0].value=v2;
+    n.parentNode.nextElementSibling.children[0].value=v1;
+    var v3=n.parentNode.children[1].value;
+    var v4=n.parentNode.nextElementSibling.children[1].value;
+    n.parentNode.children[1].value=v4;
+    n.parentNode.nextElementSibling.children[1].value=v3;
+    }
+}
+
+//上矢印を押されたら、前のタスクとvalueを入れ替え（絶対もっと短く書ける、、）
+function up(n){
+    if (n.parentNode.previousSibling!=undefined){   
+    var v1=n.parentNode.children[0].value;
+    var v2=n.parentNode.previousSibling.children[0].value;
+    n.parentNode.children[0].value=v2;
+    n.parentNode.previousSibling.children[0].value=v1;
+    var v3=n.parentNode.children[1].value;
+    var v4=n.parentNode.previousSibling.children[1].value;
+    n.parentNode.children[1].value=v4;
+    n.parentNode.previousSibling.children[1].value=v3;
+    }
+}
+
+
+
+
+for (var step=0;step<2;step++){
+    append_task();
+}
+
+task_list.children[1].children[0].focus();
+task_list.children[0].children[1].value=15;
+task_list.children[0].children[0].value="犬の散歩に行く";
+
+function calculate(){
+
+    if (endtime.value!=""){
+            var str="2020-04-01 "+endtime.value+":00";
+        var date1 = new Date(str);
+
+        function sum(arr){
+            //与えられた配列の合計を返す
+            return arr.reduce((total, element) => total + element, 0);
+        }
+
+        function back_time(mins){
+            // 終了時刻(定数)の○分前の時刻を返す
+            var d= new Date(date1 - mins*1000*60);
+            var h=( '00' + d.getHours() ).slice( -2 ); //0埋め
+            var m=( '00' + d.getMinutes() ).slice( -2 ); //0埋め
+            return h+":"+m;
+        }
+
+        var yl=yutori_last.checked;
+
+        function task_time(i){
+            // ○番目のタスク（0,1,...）の「開始時刻〜終了時刻」（文字列）を返す
+            // 例： "17:50〜18:00"
+            var n=nums.length;
+            if (yl){
+                var t1=sum(nums.slice(i,n))+yutori.value*(n-i);
+            }else{
+                var t1=sum(nums.slice(i,n))+yutori.value*(n-i-1);
+            }
+            var t2=t1-nums[i];
+            return back_time(t1)+"〜"+back_time(t2);
+        }
+
+        function task_content(i){
+            // ○番目のタスクの内容を返す
+            return task_list.children[i].children[0].value;
+        }
+
+        // タスクの所要時間リストnumsを作る。pはタスクの個数
+        var nums=[];
+        var p=task_list.childElementCount;
+        for (var step=0;step<p;step++){
+            nums.push(Number(task_list.children[step].children[1].value));
+        }
+
+        // 今までの関数を使い、出力ansを作る
+        var ans="";
+        for (var step=0;step<p;step++){
+            ans+=task_time(step);
+            ans+=" ";
+            ans+=task_content(step);
+            ans+="\n";
+        }
+
+        output.innerText=ans;
+    }
+
+}
+</script>
+</body>
+</html>
