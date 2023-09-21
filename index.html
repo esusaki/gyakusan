@@ -27,11 +27,12 @@
         #container{
             background-color: aqua;
             max-width: 800px;
-            max-height: 400px;
             padding: 30px;
             border-radius: 5px;
             background-color: white;
             box-shadow: 0 2px 5px #ccc;
+            height: 300px;
+            
     
         }
 
@@ -59,6 +60,13 @@ var output=document.getElementById("output");
 var yutori_last=document.getElementById("yutori_last");
 var body=document.getElementById("body");
 var copybutton=document.getElementById("copybutton");
+var container=document.getElementById("container");
+
+function fitcontent(){
+    var contentHeight=container.scrollHeight+20;
+    container.style.height=contentHeight+"px";
+}
+fitcontent();
 
 function copy(){
     if (output.innerText!=""){
@@ -79,6 +87,7 @@ function append_task(){
        <button onclick="del(this)" style="border:0;">削除</button>\n';
        child.style="margin-bottom:5px";
     task_list.appendChild(child);
+    fitcontent();
 }
 
 function prepend_task(){
@@ -92,6 +101,7 @@ function prepend_task(){
        if (true){
         task_list.prepend(child);
     }
+    fitcontent();
 } 
 
 function del(n){
